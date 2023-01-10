@@ -46,7 +46,7 @@ Tecnologias envolvidas:
 package CapgeminiStartFinalProject;
 
 public class Main {
-    public String main() {
+    public static void main(String [] args) {
       
     }
     
