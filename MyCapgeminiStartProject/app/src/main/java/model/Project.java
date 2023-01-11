@@ -23,7 +23,7 @@ public class Project {
         this.updatedAt = updatedAt;
     }
 
-    //alt + insert para gerar os getters and setters:
+    //alt + insert para gerar os getters and setters (métodos de acesso):
 
     public int getId() {
         return id;
