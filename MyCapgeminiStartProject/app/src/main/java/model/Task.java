@@ -31,6 +31,11 @@ public class Task {
         this.updatedAt = updatedAt;
     }
     
+    public Task() {
+        this.createdAt = new Date(); // qdo eu executar uma criação de objeto sem passar valor, vou inicializar o valor de criação daquela tarefa (o start da tarefa)
+    }
+    
+    
    //getters and setters:
 
     public int getId() {

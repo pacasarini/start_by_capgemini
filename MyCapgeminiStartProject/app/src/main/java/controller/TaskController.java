@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 import util.ConnectionFactory;
 import model.Task;
+import java.sql.Date;
 
 
 /**
@@ -19,10 +20,40 @@ import model.Task;
 public class TaskController {
     
     // criação de metodos para save, insert, delete, etc:
-    public void save(Task task){
+    
+    public void save(Task task){                    //quando o campo for "auto-increment" nao precisa informa-lo no "insert"
+        String sql = "INSERT INTO tasks (idProject,"
+                + "name,"
+                + "description,"
+                + "completed,"
+                + "notes,"
+                + "deadline,"
+                + "createdAt,"
+                + "updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        Connection connection = null;   //essa conexao nao eh no try por conta do escopo poder ser acessado no finally
+        PreparedStatement statement = null;
+        
+        try {
+            connection = ConnectionFactory.getConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, task.getIdProject());
+            statement.setString(2, task.getName());
+            statement.setString(3, task.getDescription());
+            statement.setBoolean(4, task.isIsCompleted());
+            statement.setString(5, task.getNotes());
+            statement.setDate(6, new Date(task.getDeadline().getTime()));      //eh necessario converter pq o date do sql eh diferente do java date (java.util)
+            statement.setDate(7, new Date(task.getCreatedAt().getTime()));
+            statement.setDate(8, new Date(task.getUpdatedAt().getTime()));
+            statement.execute();
+        } catch (Exception ex) {
+            throw new RuntimeException("Erro ao salvar a tarefa. " + ex.getMessage(), ex);
+        } finally {
+            ConnectionFactory.closeConnection(connection);
+        }
         
     }
-    
+     
     public void update(Task task){
         
     }
