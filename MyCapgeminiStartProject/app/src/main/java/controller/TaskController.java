@@ -47,33 +47,65 @@ public class TaskController {
             statement.setDate(8, new Date(task.getUpdatedAt().getTime()));
             statement.execute();
         } catch (Exception ex) {
-            throw new RuntimeException("Erro ao salvar a tarefa. " + ex.getMessage(), ex);
+            throw new RuntimeException("Erro ao salvar a tarefa. " 
+                    + ex.getMessage(), ex);
         } finally {
-            ConnectionFactory.closeConnection(connection);
+            ConnectionFactory.closeConnection(connection, statement);
         }
         
     }
      
     public void update(Task task){
+        String sql = "UPDATE tasks SET "
+                + "idProject = ?, "
+                + "name = ?, "
+                + "description = ?, "
+                + "status = ?, "
+                + "notes = ?, "
+                + "completed = ?, "
+                + "deadline = ?, "
+                + "createdAt = ?, "
+                + "updatedAt = ?, "
+                + "WHERE id = ?";
         
+        Connection connection = null;
+        PreparedStatement statement = null;
+        
+        try {
+            connection = ConnectionFactory.getConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, task.getIdProject());
+            statement.setString(1, task.getName());
+            statement.setString(1, task.getDescription());
+            statement.setString(1, task.getNotes());
+            statement.setBoolean(1, task.isCompleted());
+            statement.setDate(1, new Date(task.getDeadline().getTime()));
+            statement.setDate(1, new Date(task.getCreatedAt().getTime()));
+            statement.setDate(1, new Date(task.getUpdatedAt().getTime()));
+            statement.execute();
+            
+        } catch (Exception ex) {
+            throw new RuntimeException("Erro ao atualizar a tarefa. " 
+                    + ex.getMessage(), ex);
+        } 
     }
     
     public void removeById(int taskId) throws SQLException{
         
         String sql = "DELETE FROM tasks WHERE id = ?";
         
-        Connection conn = null;
+        Connection connection = null;
         PreparedStatement statement = null;
         
         try {
-            conn = ConnectionFactory.getConnection();
-            statement = conn.prepareStatement(sql);     //o statment ajuda a preparar o comando pra conexão
+            connection = ConnectionFactory.getConnection();
+            statement = connection.prepareStatement(sql);     //o statment ajuda a preparar o comando pra conexão
             statement.setInt(1, taskId); //requerimento pra mudar o primeiro caractere ("?") substituindo pelo taskId recebido 
             statement.execute();
-        } catch (SQLException e) {
-            throw new SQLException("Erro ao deletar a tarefa.");
+        } catch (Exception ex) { 
+            throw new RuntimeException("Erro ao deletar a tarefa.");
         } finally {     //o bloco finally sempre será executado, independente de ter acontecido o erro ou não
-            ConnectionFactory.closeConnection(conn);  //conexoes abertas sempre devem ser fechadas
+            ConnectionFactory.closeConnection(connection, statement);  //conexoes abertas sempre devem ser fechadas
         }
     }
     

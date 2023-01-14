@@ -78,7 +78,7 @@ public class Task {
         this.notes = notes;
     }
 
-    public boolean isIsCompleted() {
+    public boolean isCompleted() {
         return isCompleted;
     }
 
