@@ -18,10 +18,10 @@ public class ConnectionFactory {
     public static final String USER = "root";   
     public static final String PASS = "";
     
-        public static Connection getConnection() {  //o static diz que vc pode chamar o metodo sem chamar a instancia
+        public static Connection getConnection() {  //o static diz que vc pode chamar o metodo sem chamar a instancia dessa classe - ou seja sem criar objeto pra isso
             try {       //try faz tratamento de exceção (tratamento de erro)
-                Class.forName(DRIVER);
-                return DriverManager.getConnection(URL, USER, PASS);
+                Class.forName(DRIVER);   //carrega o driver pra dentro da aplicação
+                return DriverManager.getConnection(URL, USER, PASS); // classe do conj de dependencias
             } catch (Exception ex) {
                 throw new RuntimeException("Erro na conexão com o bando de dados.", ex);     //se ocorrer o erro, esse eh o tratamento
             }
@@ -33,7 +33,9 @@ public class ConnectionFactory {
                 if (connection != null) {   //"se ela existir, feche a conexao"
                     connection.close();
                 }
-            }
+            } catch (Exception ex) {
+                throw new RuntimeException("Erro ao fechar a conexão com o banco de dados.");
+            } 
         }
         
         
