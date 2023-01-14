@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package controller;
 
 import java.sql.Connection;
@@ -11,6 +8,8 @@ import java.util.List;
 import util.ConnectionFactory;
 import model.Task;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 
 
 /**
@@ -72,16 +71,24 @@ public class TaskController {
         PreparedStatement statement = null;
         
         try {
+            // estabelecendo a conexao com o banco de dados
             connection = ConnectionFactory.getConnection();
+            
+            // preparando a query
             statement = connection.prepareStatement(sql);
+            
+            // setando os valores no statement 
             statement.setInt(1, task.getIdProject());
-            statement.setString(1, task.getName());
-            statement.setString(1, task.getDescription());
-            statement.setString(1, task.getNotes());
-            statement.setBoolean(1, task.isCompleted());
-            statement.setDate(1, new Date(task.getDeadline().getTime()));
-            statement.setDate(1, new Date(task.getCreatedAt().getTime()));
-            statement.setDate(1, new Date(task.getUpdatedAt().getTime()));
+            statement.setString(2, task.getName());
+            statement.setString(3, task.getDescription());
+            statement.setString(4, task.getNotes());
+            statement.setBoolean(5, task.isCompleted());
+            statement.setDate(6, new Date(task.getDeadline().getTime()));
+            statement.setDate(7, new Date(task.getCreatedAt().getTime()));
+            statement.setDate(8, new Date(task.getUpdatedAt().getTime()));
+            statement.setInt(9, task.getId());
+            
+            //executando a query
             statement.execute();
             
         } catch (Exception ex) {
@@ -98,10 +105,18 @@ public class TaskController {
         PreparedStatement statement = null;
         
         try {
+            //Estabelecendo a conexao com o banco de dados
             connection = ConnectionFactory.getConnection();
+            
+            //preparando a query
             statement = connection.prepareStatement(sql);     //o statment ajuda a preparar o comando pra conexão
+            
+            //setando os valores
             statement.setInt(1, taskId); //requerimento pra mudar o primeiro caractere ("?") substituindo pelo taskId recebido 
+            
+            //executando a query
             statement.execute();
+            
         } catch (Exception ex) { 
             throw new RuntimeException("Erro ao deletar a tarefa.");
         } finally {     //o bloco finally sempre será executado, independente de ter acontecido o erro ou não
@@ -110,6 +125,48 @@ public class TaskController {
     }
     
     public List<Tasks> getAll(int idProject){
-        return null;
+        String sql = "SELECT * FROM tasks idProject = ?";
+        
+        Connection connection = null; //eh preciso estalecer uma conexao sempre q precisar se conectar a um banco de dados
+        PreparedStatement statement = null;
+        ResultSet resultSet = null; //classe que representa o retorno do banco de dados, onde estará a resposta do BD
+        
+        // Lista de tarefas que sera devolvida qdo a chamada do metodo acontecer
+        // estrutura q funciona como se fosse um vetor para facilitar trabalhar com coleçoes (conjunto de valores)
+        List<Task> tasks = new ArrayList<Task>();
+        
+        try {
+           connection = ConnectionFactory.getConnection();
+           statement = connection.prepareStatement(sql);
+           
+        // setando um valor que corresponde ao filtro de busca
+           statement.setInt(1, idProject);
+           
+           resultSet = statement.executeQuery();    //vai me devolver o valor de resposta daquele Select que aconteceu no BD
+           
+           //Enquanto houverem valores a serem percorridos no meu resultset
+           while(resultSet.next()) {
+               Task task = new Task();
+               task.setId(resultSet.getInt("id"));
+               task.setIdProject(resultSet.getInt("idProject"));
+               task.setName(resultSet.getString("name"));
+               task.setDescription(resultSet.getString("description"));
+               task.setNotes(resultSet.getString("notes"));
+               task.setIsCompleted(resultSet.getBoolean("completed"));
+               task.setDeadline(resultSet.getDate("deadline"));
+               task.setCreatedAt(resultSet.getDate("createdAt"));
+               task.setUpdatedAt(resultSet.getDate("updatedAt"));
+               
+               tasks.add(task); //assim coloco na lista de tarefas
+            }   
+        } catch (Exception ex) { 
+            throw new RuntimeException("Erro ao inserir a tarefa.");
+        } finally {     //o bloco finally sempre será executado, independente de ter acontecido o erro ou não
+            ConnectionFactory.closeConnection(connection, statement, resultSet);  //conexoes abertas sempre devem ser fechadas
+        }
+        
+        
+        //Lista de tarefas que foi criada e carregada do banco de dados:
+        return tasks;
     }
 }
