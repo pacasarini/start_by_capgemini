@@ -11,7 +11,7 @@ public class Project {
     private int id;
     private String name;
     private String description;
-    private Date createdAt; // Date is not native, it needs to be imported
+    private Date createdAt; // Date nao é native
     private Date updatedAt; 
     
     //alt + insert para gerar o contrutor:
@@ -21,6 +21,10 @@ public class Project {
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public Project() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     //alt + insert para gerar os getters and setters (métodos de acesso):
